@@ -24,51 +24,54 @@ namespace MongoDBGames.Controllers
             return new ObjectResult(await _gameRepository.GetAllGames());
         }
 
-        // GET: api/Game/5
-        [HttpGet("{id}", Name = "Get")]
+        // GET: api/Game/name
+        [HttpGet("{name}", Name = "Get")]
         public async Task<IActionResult> Get(string name)
         {
-            var movie = await _gameRepository.GetGame(name);
-            if (movie == null)
+            var game = await _gameRepository.GetGame(name);
+
+            if (game == null)
                 return new NotFoundResult();
 
-            return new ObjectResult(movie);
+            return new ObjectResult(game);
         }
 
         // POST: api/Game
         [HttpPost]
-        public async Task<IActionResult> Post([FromBody]Game movie)
+        public async Task<IActionResult> Post([FromBody]Game game)
         {
-            await _gameRepository.Upsert(movie);
-            return new OkObjectResult(movie);
+            await _gameRepository.Upsert(game);
+            return new OkObjectResult(game);
         }
 
         // PUT: api/Game/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> Put(string id, [FromBody]Game movie)
+        public async Task<IActionResult> Put(string id, [FromBody]Game game)
         {
-            var movieId = new ObjectId(id);
-            var movieFromDb = _gameRepository.GetGame(movieId);
-            if (movieFromDb == null)
+            var gameId = new ObjectId(id);
+            var gameFromDb = await _gameRepository.GetGame(gameId);
+
+            if (gameFromDb == null)
                 return new NotFoundResult();
 
-            movie.Id = movieId;
+            game.Id = gameId;
 
-            await _gameRepository.Upsert(movie, movieId);
+            await _gameRepository.Upsert(game, gameId);
 
-            return new OkObjectResult(movie);
+            return new OkObjectResult(game);
         }
 
         // DELETE: api/ApiWithActions/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(string id)
         {
-            var movieId = new ObjectId(id);
-            var movieFromDb = _gameRepository.GetGame(movieId);
-            if (movieFromDb == null)
+            var gameId = new ObjectId(id);
+            var gameFromDb = await _gameRepository.GetGame(gameId);
+
+            if (gameFromDb == null)
                 return new NotFoundResult();
 
-            await _gameRepository.Delete(movieId);
+            await _gameRepository.Delete(gameId);
 
             return new OkResult();
         }
