@@ -32,34 +32,28 @@ namespace MongoDBGames.Repository
                     .Find(filter)
                     .FirstOrDefaultAsync();
         }
-
-        public Task<Game> GetGame(ObjectId id)
+       
+        public async Task Create(Game game)
         {
-            FilterDefinition<Game> filter = Builders<Game>.Filter.Eq(m => m.Id, id);
-
-            return _context
-                .Games
-                .Find(filter)
-                .FirstOrDefaultAsync();
+            await _context.Games.InsertOneAsync(game);
         }
 
-        public async Task<bool> Upsert(Game game, ObjectId id = new ObjectId())
+        public async Task<bool> Update(Game game)
         {
             ReplaceOneResult updateResult =
                 await _context
                         .Games
                         .ReplaceOneAsync(
-                            filter: m => m.Id.Equals(id),
-                            replacement: game,
-                            options: new UpdateOptions { IsUpsert = true });
+                            filter: g => g.Id == game.Id,
+                            replacement: game);
 
             return updateResult.IsAcknowledged
-                && updateResult.ModifiedCount > 0;
+                    && updateResult.ModifiedCount > 0;
         }
 
-        public async Task<bool> Delete(ObjectId id)
+        public async Task<bool> Delete(string name)
         {
-            FilterDefinition<Game> filter = Builders<Game>.Filter.Eq(m => m.Id, id);
+            FilterDefinition<Game> filter = Builders<Game>.Filter.Eq(m => m.Name, name);
 
             DeleteResult deleteResult = await _context
                                                 .Games

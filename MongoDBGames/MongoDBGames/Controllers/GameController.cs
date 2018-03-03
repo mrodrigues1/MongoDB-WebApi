@@ -40,38 +40,36 @@ namespace MongoDBGames.Controllers
         [HttpPost]
         public async Task<IActionResult> Post([FromBody]Game game)
         {
-            await _gameRepository.Upsert(game);
+            await _gameRepository.Create(game);
             return new OkObjectResult(game);
         }
 
         // PUT: api/Game/5
-        [HttpPut("{id}")]
-        public async Task<IActionResult> Put(string id, [FromBody]Game game)
+        [HttpPut("{name}")]
+        public async Task<IActionResult> Put(string name, [FromBody]Game game)
         {
-            var gameId = new ObjectId(id);
-            var gameFromDb = await _gameRepository.GetGame(gameId);
+            var gameFromDb = await _gameRepository.GetGame(name);
 
             if (gameFromDb == null)
                 return new NotFoundResult();
 
-            game.Id = gameId;
+            game.Id = gameFromDb.Id;
 
-            await _gameRepository.Upsert(game, gameId);
+            await _gameRepository.Update(game);
 
             return new OkObjectResult(game);
         }
 
         // DELETE: api/ApiWithActions/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(string id)
+        [HttpDelete("{name}")]
+        public async Task<IActionResult> Delete(string name)
         {
-            var gameId = new ObjectId(id);
-            var gameFromDb = await _gameRepository.GetGame(gameId);
+            var gameFromDb = await _gameRepository.GetGame(name);
 
             if (gameFromDb == null)
                 return new NotFoundResult();
 
-            await _gameRepository.Delete(gameId);
+            await _gameRepository.Delete(name);
 
             return new OkResult();
         }
