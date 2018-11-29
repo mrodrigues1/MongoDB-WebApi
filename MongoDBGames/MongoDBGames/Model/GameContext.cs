@@ -7,9 +7,8 @@ namespace MongoDBGames.Model
     {
         private readonly IMongoDatabase _db;
 
-        public GameContext(IOptions<Settings> options)
+        public GameContext(IOptions<Settings> options, IMongoClient client)
         {
-            var client = new MongoClient(options.Value.ConnectionString);
             _db = client.GetDatabase(options.Value.Database);
         }
 

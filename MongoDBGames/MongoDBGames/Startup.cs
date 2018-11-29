@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using MongoDB.Driver;
 using MongoDBGames.Model;
 using MongoDBGames.Repository;
 
@@ -24,9 +25,13 @@ namespace MongoDBGames
             services.Configure<Settings>(
                 options =>
                 {
-                    options.ConnectionString = Configuration.GetSection("MongoDb:ConnectionString").Value;
+                    options.ConnectionString =
+                        Configuration.GetSection("MongoDb:ConnectionString").Value;
                     options.Database = Configuration.GetSection("MongoDb:Database").Value;
                 });
+
+            services.AddSingleton<IMongoClient, MongoClient>(
+                _ => new MongoClient(Configuration.GetSection("MongoDb:ConnectionString").Value));
 
             services.AddTransient<IGameContext, GameContext>();
             services.AddTransient<IGameRepository, GameRepository>();
